@@ -144,6 +144,7 @@ chdir = %(chdir)s
         if args.username: F.write("user = %s\n"%args.username)
         if args.group: F.write("group = %s\n"%args.group)
         if args.port: F.write("port = %s\n"%args.port)
+        if args.logfile: F.write("logfile = %s\n"%args.logfile)
         if args.environment:
             env_to_string = ' '.join("\"%s\""%e for e in args.environment)
             F.write("environment = %s\n"%env_to_string)
@@ -278,6 +279,7 @@ def getargs(args=None):
     S.add_argument('-G','--group')
     S.add_argument('-e','--environment', action='append', help='Add an environment variable')
     S.add_argument('-E','--env-file', help='Environment file path')
+    S.add_argument('-L','--logfile', default='-', help='Write a console output to this file')
     S.add_argument('-f','--force', action='store_true', default=False)
     S.add_argument('-A','--autostart',action='store_true', default=False,
                    help='Automatically start after adding')
