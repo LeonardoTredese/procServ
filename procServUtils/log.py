@@ -1,7 +1,8 @@
 import sys, os, subprocess
 from .conf import getrundir
-tail = '/usr/bin/tail'
-less = '/usr/bin/less'
+tail  = '/usr/bin/tail'
+less  = '/usr/bin/less'
+reset = '/usr/bin/reset'
 
 def logs(conf, args):
     name = args.name
@@ -10,7 +11,11 @@ def logs(conf, args):
         print(args.tail)
         subprocess.run([tail, "-n", args.tail, logfile_path], stdout=sys.stdout)
     else:
-        subprocess.run([less, logfile_path], stdin=sys.stdin, stdout=sys.stdout)
+        try:
+            subprocess.run([less, logfile_path], stdin=sys.stdin, stdout=sys.stdout)
+        except KeyboardInterrupt:
+            # reset terminal on reckless close
+            subprocess.run(reset)
 
 def log_file_path(name, conf):
     if not conf.has_section(name):    
