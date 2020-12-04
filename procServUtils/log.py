@@ -18,15 +18,27 @@ def logs(conf, args):
             subprocess.run(reset)
 
 def log_file_path(name, conf):
-    if not conf.has_section(name):    
-        sys.stderr.write("Instance '%s' not found"%name)
-        sys.exit(1)
+    if not conf.has_section(name):
+        print_err_and_exit("Instance '%s' not found"%name, 1)
     if not conf.has_option(name, 'logfile') or conf.get(name, 'logfile') == '-':
-        sys.stderr.write("Logfile was not set for '%s'"%name)
-        sys.exit(1)
+        print_err_and_exit("Logging is not configured for '%s', check configuration file\n"%name, 1)
     logfile_path = conf.get(name, 'logfile') if os.path.isabs(conf.get(name, 'logfile')) else '/'.join([conf.get(name,'chdir'),conf.get(name, 'logfile')])
     if not os.path.isfile(logfile_path):
-        sys.stderr.write("Logfile '%s' does not exist"%logfile_path)
-        sys.exit(1)
+        if yes_or_no("Logfile '%s' does not exist yet, do you want to create it?"%logfile_path):
+            open(logfile_path, 'w').close()
+        else:
+            print_err_and_exit("then there will be no logs\n",1)
     return logfile_path
 
+def print_err_and_exit(errormsg, exitcode):
+    sys.stderr.write(errormsg)
+    sys.exit(exitcode)
+
+def yes_or_no(question):
+    reply = str(input(question+' (y/n): ')).lower().strip()
+    if reply[0] == 'y':
+       return True
+    elif reply[0] == 'n':
+       return False
+    else:
+       return yes_or_no("Uh? please retry")
