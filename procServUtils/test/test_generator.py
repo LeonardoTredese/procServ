@@ -1,4 +1,3 @@
-
 import os
 import unittest
 
@@ -32,6 +31,7 @@ RuntimeDirectory=procserv-instance-0
 StandardOutput=syslog
 StandardError=inherit
 SyslogIdentifier=procserv-instance-0
+
 
 [Install]
 WantedBy=multi-user.target
@@ -102,106 +102,6 @@ Group=somegroup
 [Install]
 WantedBy=multi-user.target
 """ % generator.which('procServ-launcher'))
-
-    def test_conf_port_tcp(self):
-        with TestDir() as t:
-            confname = t.dir+'/procServ.d/instance-3.conf'
-            with open(confname, 'x') as F:
-                F.write("""
-[instance-3]
-command = /bin/sh -c blah
-chdir = /somedir
-port = 6666
-""")
-            generator.run(t.dir+'/run')
-            service = t.dir+'/run/procserv-instance-3.service'
-            with open(service, 'r') as F:
-                content = F.read()
-                self.assertEqual(content, """
-[Unit]
-Description=procServ for instance-3
-After=network.target remote-fs.target
-ConditionPathIsDirectory=/somedir
-
-[Service]
-Type=simple
-ExecStart=%s --system instance-3 --port 6666
-RuntimeDirectory=procserv-instance-3
-StandardOutput=syslog
-StandardError=inherit
-SyslogIdentifier=procserv-instance-3
-
-[Install]
-WantedBy=multi-user.target
-""" % generator.which('procServ-launcher'))
-
-    def test_conf_basic_logfile_relpath(self):
-        with TestDir() as t:
-            logfile = 'log.txt'
-            chdir   = '/somedir'
-            confname = t.dir+'/procServ.d/instance-5.conf'
-            with open(confname, 'x') as F:
-                F.write("""
-[instance-5]
-command = /bin/sh -c blah
-chdir = /somedir
-logfile = log.txt
-""")
-            generator.run(t.dir+'/run')
-            service = t.dir+'/run/procserv-instance-5.service'
-            with open(service, 'r') as F:
-                content = F.read()
-                self.assertEqual(content, """
-[Unit]
-Description=procServ for instance-5
-After=network.target remote-fs.target
-ConditionPathIsDirectory=/somedir
-
-[Service]
-Type=simple
-ExecStart={0} --system instance-5 --logfile {1}
-RuntimeDirectory=procserv-instance-5
-StandardOutput=syslog
-StandardError=inherit
-SyslogIdentifier=procserv-instance-5
-
-[Install]
-WantedBy=multi-user.target
-""".format(generator.which('procServ-launcher'), logfile))
-            
-    def test_conf_basic_logfile_abspath(self):
-        with TestDir() as t:
-            logfile = os.path.expanduser("~") + '/random/dir/log.txt'
-            chdir   = '/somedir'
-            confname = t.dir+'/procServ.d/instance-6.conf'
-            with open(confname, 'x') as F:
-                F.write("""
-[instance-6]
-command = /bin/sh -c blah
-chdir = /somedir
-logfile = %s
-""" % logfile)
-            generator.run(t.dir+'/run')
-            service = t.dir+'/run/procserv-instance-6.service'
-            with open(service, 'r') as F:
-                content = F.read()
-                self.assertEqual(content, """
-[Unit]
-Description=procServ for instance-6
-After=network.target remote-fs.target
-ConditionPathIsDirectory=/somedir
-
-[Service]
-Type=simple
-ExecStart={0} --system instance-6 --logfile {1}
-RuntimeDirectory=procserv-instance-6
-StandardOutput=syslog
-StandardError=inherit
-SyslogIdentifier=procserv-instance-6
-
-[Install]
-WantedBy=multi-user.target
-""".format(generator.which('procServ-launcher'), logfile ))
 
     def test_system(self):
         with TestDir() as t:
