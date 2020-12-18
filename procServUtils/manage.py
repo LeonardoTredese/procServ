@@ -148,7 +148,7 @@ chdir = %(chdir)s
         if args.username: F.write("user = %s\n"%args.username)
         if args.group: F.write("group = %s\n"%args.group)
         if args.port: F.write("port = %s\n"%args.port)
-        if args.logfile: F.write("logfile = %s\n"%args.logfile)
+        if args.logfile and not args.logfile == '-': F.write("logfile = %s\n"%args.logfile)
         if args.environment:
             env_to_string = ' '.join("\"%s\""%e for e in args.environment)
             F.write("environment = %s\n"%env_to_string)
