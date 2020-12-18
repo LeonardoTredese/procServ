@@ -67,7 +67,7 @@ group = somegroup
         with TestDir() as t:
             main(getargs(['add',
                           '-C', '/somedir',
-                          '-P', 'tcp:6666',
+                          '-P', '6666',
                           'instance-3', '--', '/bin/sh', '-c', 'blah']), test=True)
 
             confname = t.dir+'/procServ.d/instance-3.conf'
@@ -80,27 +80,7 @@ group = somegroup
 [instance-3]
 command = /bin/sh -c blah
 chdir = /somedir
-port = tcp:6666
-""")
-
-    def test_add_port_unix(self):
-        with TestDir() as t:
-            main(getargs(['add',
-                          '-C', '/somedir',
-                          '-P', 'unix:test-port', 
-                          'instance-4', '--', '/bin/sh', '-c', 'blah']), test=True)
-
-            confname = t.dir+'/procServ.d/instance-4.conf'
-
-            self.assertTrue(os.path.isfile(confname))
-            with open(confname, 'r') as F:
-                content = F.read()
-
-            self.assertEqual(content, """
-[instance-4]
-command = /bin/sh -c blah
-chdir = /somedir
-port = unix:test-port
+port = 6666
 """)
 
     def test_add_basic_logfile_relpath(self):
@@ -140,7 +120,8 @@ logfile = log.txt
 [instance-6]
 command = /bin/sh -c blah
 chdir = /somedir
-""" + "logfile = " + logfile + "\n")
+logfile = %s
+""" % logfile)
 
             self.assertTrue(os.path.isfile(logfile))
             os.remove(logfile)
