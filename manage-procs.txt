@@ -172,6 +172,20 @@ Report the status of all procServ instances.
     Show a help message and exit.
 
 
+*manage-procs logs* [-h] [-t 'tail'] 'name'::
+Display the logs of a procServ instance.
+
+To detach from the logs press `q`.
+
+*-h, \--help*:::
+    Show a help message and exit.
+*-t, \--tail*:::
+    Output the specified number of lines at the end of the logfile
+
+*name*:::
+    Instance name.
+
+
 SEE ALSO
 --------
 

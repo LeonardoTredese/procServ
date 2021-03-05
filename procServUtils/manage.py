@@ -94,9 +94,13 @@ def attachproc(conf, args):
     from .attach import attach
     attach(args)
 
+def logsproc(conf, args):
+    from .log import logs
+    logs(conf,args)
+
 def addproc(conf, args):
     from .generator import run, write_service
-
+    from .log import create_logfile, get_logfile_path
     outdir = getgendir(user=args.user)
     cfile = os.path.join(outdir, '%s.conf'%args.name)
     argusersys = '--user' if args.user else '--system'
@@ -144,6 +148,9 @@ chdir = %(chdir)s
         if args.username: F.write("user = %s\n"%args.username)
         if args.group: F.write("group = %s\n"%args.group)
         if args.port: F.write("port = %s\n"%args.port)
+        if args.logfile and not args.logfile == '-':
+            F.write("logfile = %s\n"%args.logfile)
+            create_logfile(get_logfile_path(args.chdir , args.logfile))
         if args.environment:
             env_to_string = ' '.join("\"%s\""%e for e in args.environment)
             F.write("environment = %s\n"%env_to_string)
@@ -278,6 +285,7 @@ def getargs(args=None):
     S.add_argument('-G','--group')
     S.add_argument('-e','--environment', action='append', help='Add an environment variable')
     S.add_argument('-E','--env-file', help='Environment file path')
+    S.add_argument('-L','--logfile', help='Write the console output to this file')
     S.add_argument('-f','--force', action='store_true', default=False)
     S.add_argument('-A','--autostart',action='store_true', default=False,
                    help='Automatically start after adding')
@@ -308,6 +316,11 @@ def getargs(args=None):
     S.add_argument("name", help='Instance name')
     S.add_argument('extra', nargs=REMAINDER, help='extra args for telnet')
     S.set_defaults(func=attachproc)
+
+    S = SP.add_parser('logs', help='Display the logs of a procServ instance')
+    S.add_argument('-t','--tail', dest='tail', help="Output the specified number of lines at the end of the logfile")
+    S.add_argument("name", help='Instance name')
+    S.set_defaults(func=logsproc)
 
     A = P.parse_args(args=args)
     if not hasattr(A, 'func'):

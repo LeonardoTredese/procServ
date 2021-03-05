@@ -51,13 +51,13 @@ SyslogIdentifier=procserv-%(name)s
 """%opts)
 
     if not user:
-        F.write("""
-User=%(user)s
-Group=%(group)s
-"""%opts)
-
-    F.write("""
-[Install]
+       F.write("\n")
+       if conf.get(sect, 'user') != 'nobody':
+           F.write("User=%(user)s\n"%opts)
+       if conf.get(sect, 'group') != 'nogroup':
+           F.write("Group=%(group)s\n"%opts)    
+       F.write("\n")
+    F.write("""[Install]
 WantedBy=multi-user.target
 """%opts)
 

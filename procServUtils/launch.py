@@ -38,6 +38,7 @@ def main(args):
     chdir = conf.get(name, 'chdir')
     cmd   = conf.get(name, 'command')
     port  = conf.get(name, 'port')
+    logfile = conf.get(name, 'logfile')
 
     rundir = getrundir(user=user)
 
@@ -50,7 +51,7 @@ def main(args):
     toexec = [
         'procServ',
         '--foreground',
-        '--logfile', '-',
+        '--logfile', logfile,
         '--name', name,
         '--ignore','^D^C^]',
         '--logoutcmd', '^D',
